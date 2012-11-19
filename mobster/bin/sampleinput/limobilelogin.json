@@ -1,0 +1,39 @@
+{
+    "name" : "LinkedIn Mobile Login",
+    "navigations": [
+        [
+            {
+                "type": "navigate",
+                "params": {
+                    "url": "https://touch.www.linkedin.com/login.html"
+                },
+                "page-name": "Login Page",
+                "network-timeout": 1
+            }
+        ],
+        [
+            {
+                "type": "textfield-set",
+                "params": {
+                    "id": "username",
+                    "value": "user2008@correo.linkedinlabs.com"
+                }
+            },
+            {
+                "type": "textfield-set",
+                "params": {
+                    "id": "password",
+                    "value": "password"
+                }
+            },
+            {
+                "type": "click",
+                "params": {
+                    "id": "login-button"
+                },
+                "page-name": "Member Home",
+                "network-timeout": 2
+            }
+        ]
+    ]
+}

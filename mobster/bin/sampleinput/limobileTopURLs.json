@@ -1,0 +1,72 @@
+{
+    "name" : "LinkedIn Mobile Login",
+    "navigations": [
+        [
+            {
+                "type": "navigate",
+                "params": {
+                    "url": "https://touch.www.linkedin.com/login.html"
+                },
+                "page-name": "Login Page",
+                "network-timeout": 1
+            }
+        ],
+        [
+            {
+                "type": "textfield-set",
+                "params": {
+                    "id": "username",
+                    "value": "user2008@correo.linkedinlabs.com"
+                }
+            },
+            {
+                "type": "textfield-set",
+                "params": {
+                    "id": "password",
+                    "value": "password"
+                }
+            },
+            {
+                "type": "click",
+                "params": {
+                    "id": "login-button"
+                },
+                "page-name": "Member Home Page",
+                "network-timeout": 2
+            }
+        ],
+        [
+            {
+                "type": "navigate",
+                "params": {
+                    "url": "https://touch.www.linkedin.com/#you"
+                },
+                "page-name": "Your Profile Page",
+                "network-timeout": 1
+            }
+        ],
+        [
+            {
+                "type": "navigate",
+                "params": {
+                    "url": "https://touch.www.linkedin.com/#news/top"
+                },
+                "page-name": "TopNews Page(Linkedin Today)",
+                "network-timeout": 1
+            }
+        ],
+        [
+            {
+                "type": "navigate",
+                "params": {
+                    "url": "https://touch.www.linkedin.com/#pymk"
+                },
+                "page-name": "PYMK Page",
+                "network-timeout": 1
+            }
+        ]
+
+
+
+    ]
+}

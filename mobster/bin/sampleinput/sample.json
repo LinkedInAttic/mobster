@@ -1,0 +1,16 @@
+{
+    "name" : "Sample Flow",
+    "navigations": [
+        [
+            {
+                "type": "navigate",
+                "params": {
+                    "url": "https://touch.www.linkedin.com"
+                },
+                "page-name": "Linkedin Home Page",
+                "network-timeout": 1
+            }
+        ],
+
+    ]
+}
