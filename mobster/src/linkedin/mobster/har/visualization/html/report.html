@@ -1,0 +1,113 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.8.2/css/jquery.dataTables.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.8.2/jquery.dataTables.min.js"></script>
+    <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
+    <script src="js/oo.js"></script>
+    <script src="js/util.js"></script>
+    <script src="js/waterfall.js"></script>
+    <script src="js/infotable.js"></script>
+    <style>
+        td {
+            text-align: center
+        }
+        body {
+            font-family: Arial,Helvetica,"Nimbus Sans L",sans-serif
+        }
+
+        #resource-info-table {
+            background-color: #FFFACD;
+            border: 1px solid black;
+            padding: 0px;
+        }
+
+        #resource-info-table td {
+            margin: 0;
+            text-align: left;
+        }
+
+        #resource-info-table .key {
+            font: bold 12px Courier;
+            width: 100px;
+            overflow: hidden;
+            display: inline-block;
+            white-space: nowrap;
+            border-right: solid 1px #000;
+            padding-right: 5px;
+        }
+
+        #resource-info-table .value {
+            font: 12px Courier;
+            max-width: 700px;
+            overflow: hidden;
+            display: inline-block;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            padding-left: 5px;
+        }
+
+        #timebar-tooltip-table {
+            background-color: #FFFACD;
+            border: 1px solid black;
+            font: 12px Courier;
+        }
+
+        #timebar-tooltip-table .color {
+            width: 13px;
+        }
+
+        #timebar-tooltip-table .label {
+            text-align: left;
+        }
+
+        #timebar-tooltip-table .duration {
+            width: 40px;
+        }
+
+        #waterfall-canvas {
+            padding-left:2px;
+        }
+    </style>
+  	<script>
+  		window.onload = function() {
+          var har_json_files = {{ har_json }}
+          $("#waterfall-container").append(makeWaterfallCanvas(har_json_files[0].log.entries.length))
+          new HTTPWaterfallDrawing("waterfall-canvas", har_json_files[0])
+          new MemoryMetricsTable("memory-metrics-table", har_json_files)
+          new PageMetricsTable("page-metrics-table", har_json_files)
+          new DeviceInfoTable("device-info-table", har_json_files)
+
+          var tableParams = {
+              "bPaginate": false,
+              "bInfo": false,
+              "bFilter": false,
+              "bJQueryUI": true
+          }
+          $("#device-info-table").dataTable(tableParams)
+          $("#memory-metrics-table").dataTable(tableParams)
+          $("#page-metrics-table").dataTable(tableParams)
+          $("#waterfall-label").text(har_json_files[0].log.pages[0]._pageName)
+  		}
+    </script>
+  </head>
+  <body onmousedown="return false;">
+    <h2>Mobile Performance Data</h2>
+    <div id="tables">
+      <table id="device-info-table" cellpadding="0" cellspacing="0" border="0" class="dataTable"></table>
+      <br/>
+      <h3>Memory Metrics</h3>
+      <table id="memory-metrics-table" cellpadding="0" cellspacing="0" border="0" class="dataTable"></table>
+      <br/>
+      <h3>Page Metrics</h3>
+      <table id="page-metrics-table" cellpadding="0" cellspacing="0" border="0" class="dataTable"></table>
+      <br/>
+    </div>
+    <br/>
+    <hr/>
+    <a name="waterfall"></a>
+    <h3 id="waterfall-label">Waterfall</h3>
+    <div id="waterfall-container">
+    </div>
+  </body>
+</html>
