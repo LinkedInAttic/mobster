@@ -16,15 +16,13 @@ Mobster provides a simple way for developers to record crucial web performance d
  * HTTP waterfalls
  * Memory Utilization 
 
-See our [web site](https://iwww.corp.linkedin.com/wiki/cf/display/ENGS/Mobster) for more details on the project.
 
 ## Contribution ##
 
 Mobster is a new project, and we are interested in building the community; we would welcome any thoughts or [patches](URL to be added). You can reach us [on the Apache mailing lists](http://incubator.apache.org/mobster/contact.html).
 
-The Mobster code is available from svn or a read only git mirror:
- * svn co [URL to be added]
- * git clone [URL to be added]
+The Mobster code is available from git mirror:
+ * git clone [https://github.com/linkedin/mobster]
 
 ## Getting Started ##
 
@@ -42,9 +40,7 @@ Prerequisites -
  * Download and install Python 2.6.6+ (but not Python 3) . 
  * You should download and install PIP, you can find instructions to download and install PIP here
 
-1. Check out mobster code
-
-svn co svn+ssh://svn.corp.linkedin.com/perfrepo/trunk/utils/remote_browser_perf/mobster
+1. Check out mobster code ( using git clone command)
 
 2. Install the packages listed in requirements.txt
 
@@ -75,7 +71,7 @@ open -a "Google Chrome" --args --remote-debugging-port=9222 --enable-memory-info
 '-a average', action='store_true', help='Output the average results of the iterations'
 '-p report', action='store_true', help='Call make_report.py to make a report and open it'
 
-./bin/mobster.py -t sampleinput/premsubscriptions.json -i 1 -a -p
+./bin/mobster.py -t sampleinput/sample.json -i 1 -a -p
 
 You should now be viewing the report in the browser. To learn how to make your own flows, look at the scripts in the bin/sampleinput/ directory.
 
@@ -88,9 +84,7 @@ Prerequisites -
  * You should download and install PIP, you can find instructions to download and install PIP here
  * You should install Chrome 18+ 
 
-1. Check out mobster code
-
-svn co svn+ssh://svn.corp.linkedin.com/perfrepo/trunk/utils/remote_browser_perf/mobster
+1. Check out mobster code ( using git clone command )
 
 2. Install the packages listed in requirements.txt
 
@@ -111,7 +105,7 @@ To test if the remote debugging is working try this on your chrome browser - htt
 
 4. Run the main Mobster script with a sample flow in your mobster home directory : 
 
-./bin/mobster.py -o data.json -t bin/sampleinput/limobilelogin.json
+./bin/mobster.py -o data.json -t bin/sampleinput/sample.json
 
 5. Generate a report with the collected data and open it in a browser:
 
