@@ -49,8 +49,9 @@ pip install -r requirements.txt
 
 3. Open Chrome on your device. If using desktop Chrome, start it with remote debugging enabled and remote debugging port set to 9222, e.g. (for Mac OS):
 
-open -a "Google Chrome" --args --remote-debugging-port=9222 --enable-memory-info
-     To test if the remote debugging is working try this on your chrome browser - http://localhost:9222
+<pre> open -a "Google Chrome" --args --remote-debugging-port=9222 --enable-memory-info </pre>
+
+To test if the remote debugging is working try this on your chrome browser - http://localhost:9222
 
 4. Connecting Mobster to Android device
 
@@ -63,6 +64,7 @@ open -a "Google Chrome" --args --remote-debugging-port=9222 --enable-memory-info
 
 6. Run the main Mobster script with a sample flow in your mobster home directory : 
 
+<pre> 
 '-d outputdir', help='Write JSON file to specified directory'
 '-f filename', help='Used specified name for JSON file'
 '-u urls', help='Comma separated URLs to profile'
@@ -72,6 +74,7 @@ open -a "Google Chrome" --args --remote-debugging-port=9222 --enable-memory-info
 '-p report', action='store_true', help='Call make_report.py to make a report and open it'
 
 ./bin/mobster.py -t sampleinput/sample.json -i 1 -a -p
+</pre>
 
 You should now be viewing the report in the browser. To learn how to make your own flows, look at the scripts in the bin/sampleinput/ directory.
 
@@ -95,21 +98,21 @@ pip install -r requirements.txt
 
 Mac OS:
 
-open -a "Google Chrome" --args --remote-debugging-port=9222 --enable-memory-info
+<pre> open -a "Google Chrome" --args --remote-debugging-port=9222 --enable-memory-info </pre>
 
 Red Hat Linux (assuming google-chrome is in your PATH):
 
-google-chrome --args --remote-debugging-port=9222
+<pre> google-chrome --args --remote-debugging-port=9222 </pre>
 
 To test if the remote debugging is working try this on your chrome browser - http://localhost:9222
 
 4. Run the main Mobster script with a sample flow in your mobster home directory : 
 
-./bin/mobster.py -o data.json -t bin/sampleinput/sample.json
+<pre> ./bin/mobster.py -o data.json -t bin/sampleinput/sample.json </pre>
 
 5. Generate a report with the collected data and open it in a browser:
 
-./bin/make_report.py -r data.json -b
+<pre> ./bin/make_report.py -r data.json -b </pre>
 
 You should now be viewing the report in the browser. To learn how to make your own flows, look at the scripts in the bin/sampleinput/ directory.
 
