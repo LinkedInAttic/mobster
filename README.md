@@ -36,7 +36,7 @@ key components -
 
 Prerequisites - 
 
- * If you want to use Mobster to measure performance of web applications on a physical android device , you need to install Android SDK version 4.0 or later on your host.           You can download SDK here 
+ * If you want to use Mobster to measure performance of web applications on a physical android device , you need to install Android SDK version 4.0 or later on your host.  You can download SDK here - http://developer.android.com/sdk/index.html#download
  * Download and install Python 2.6.6+ (but not Python 3) . 
  * You should download and install PIP, you can find instructions to download and install PIP here
 
