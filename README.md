@@ -51,7 +51,11 @@ pip install -r requirements.txt
 
 <pre> open -a "Google Chrome" --args --remote-debugging-port=9222 --enable-memory-info </pre>
 
-To test if the remote debugging is working try this on your chrome browser - http://localhost:9222
+To test if the remote debugging is working try this on your chrome browser - http://localhost:9222. 
+
+Note :
+1. After you have executed the above command you should be able to see an instance of chrome browser
+2. if "http://localhost:9222" is not working for you, try closing all instances of chrome browsers on your device before executing the command.
 
 4. Connecting Mobster to Android device
 
