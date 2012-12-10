@@ -47,26 +47,17 @@ Prerequisites -
 cd mobster
 pip install -r requirements.txt
 
-3. Open Chrome on your device. If using desktop Chrome, start it with remote debugging enabled and remote debugging port set to 9222, e.g. (for Mac OS):
 
-<pre> open -a "Google Chrome" --args --remote-debugging-port=9222 --enable-memory-info </pre>
-
-To test if the remote debugging is working try this on your chrome browser - http://localhost:9222. 
-
-Note :
-1. After you have executed the above command you should be able to see an instance of chrome browser
-2. if "http://localhost:9222" is not working for you, try closing all instances of chrome browsers on your device before executing the command.
-
-4. Connecting Mobster to Android device
+3. Connecting Mobster to Android device
 
  * Connect the device to your computer via USB
  * Enable USB debugging on the device in  settings -> Developer Options -> USB Debugging ( Please refer to your device manuals for details )
  * Open Chrome browser in the device and enable USB debugging in Settings -> Advanced -> Developer Tools -> Enable USB Web debugging
  * Execute the command below under the Android SDK folder : 	./<Android-SDK-Folder>/platform-tools/adb forward tcp:9222 localabstract:chrome_devtools_remote
 
-5. Open Chrome on the device
+4. Open Chrome on the device
 
-6. Run the main Mobster script with a sample flow in your mobster home directory : 
+5. Run the main Mobster script with a sample flow in your mobster home directory : 
 
 <pre> 
 '-d outputdir', help='Write JSON file to specified directory'
@@ -109,6 +100,11 @@ Red Hat Linux (assuming google-chrome is in your PATH):
 <pre> google-chrome --args --remote-debugging-port=9222 </pre>
 
 To test if the remote debugging is working try this on your chrome browser - http://localhost:9222
+
+Note :
+1. After you have executed the above command you should be able to see an instance of chrome browser
+2. if "http://localhost:9222" is not working for you, try closing all instances of chrome browsers on your device before executing the command.
+
 
 4. Run the main Mobster script with a sample flow in your mobster home directory : 
 
