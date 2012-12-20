@@ -3,6 +3,7 @@ import json
 import logging
 from pprint import pformat
 from Queue import Queue
+import sys
 import threading
 import urllib2
 
@@ -31,7 +32,13 @@ class RemoteWebKitCommunicator(WebSocketClient):
 
     # Access list of open browser pages and pick the page with the specified index
     url = 'http://localhost:{0}/json'.format(port)
-    response = urllib2.urlopen(url).read()
+    try:
+      response = urllib2.urlopen(url).read()
+    except urllib2.URLError:
+      log.error("Failed to connect. Please make sure a browser "   \
+                "is running with WebKit remote debugging enabled.")
+      sys.exit()
+
     page_info = json.loads(response)
     page = page_info[page_num]
     debug_ws_url = page['webSocketDebuggerUrl']
