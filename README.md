@@ -91,7 +91,7 @@ If you use Chrome as your web browser normally, it will be annoying to run Mobst
 Mobster is a new project, and we are interested in building the community; we would welcome any thoughts or [patches](URL to be added). You can reach us [on the Apache mailing lists](http://incubator.apache.org/mobster/contact.html).
 
 The Mobster code is available from git mirror:
-<pre>git clone [https://github.com/linkedin/mobster](https://github.com/linkedin/mobster)</pre>
+<pre>git clone https://github.com/linkedin/mobster</pre>
 
 Key Components - 
 
