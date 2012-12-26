@@ -72,7 +72,10 @@ You should now be viewing the report in the browser. To learn how to make your o
     <pre> open -a "Google Chrome" --args --remote-debugging-port=9222 --enable-memory-info</pre>
 
     Red Hat Linux (assuming google-chrome is in your PATH):
-    <pre> google-chrome --args --remote-debugging-port=9222 </pre>
+    <pre> google-chrome --remote-debugging-port=9222 </pre>
+
+    Windows (assuming chrome.exe is in your PATH):
+    <pre> chrome --remote-debugging-port=9222 </pre>
 
     This should open a Chrome browser window. To test if remote debugging is working, navigate to http://localhost:9222 in your browser and verify that a page is displayed with the title "Inspectable Pages". If not, make sure that no Chrome windows are open and then try this command again.
 
