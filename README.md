@@ -77,7 +77,7 @@ Mobster reports will be generated under report folder if no folder is specified.
     Windows (assuming chrome.exe is in your PATH):
     <pre> chrome --remote-debugging-port=9222 </pre>
 
-    This should open a Chrome browser window. To test if remote debugging is working, navigate to http://localhost:9222 in your browser and verify that a page is displayed with the title "Inspectable Pages". If not, make sure that no Chrome windows are open and then try this command again.
+    This should open a Chrome browser window. To test if remote debugging is working, navigate to [localhost:9222](http://localhost:9222) in your browser and verify that a page is displayed with the title "Inspectable Pages". If not, make sure that no Chrome windows are open and then try this command again.
 
 2. Run the main Mobster script with a sample flow in your Mobster home directory. This step is the same whether you are running Mobster with an Android device or desktop browser. 
 
