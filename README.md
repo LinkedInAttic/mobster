@@ -61,7 +61,7 @@ Mobster provides a simple way for developers to record crucial web performance d
 
     <pre>./bin/mobster.py -t bin/sampleinput/sample.json -p -b</pre>
 
-Mobster reports will be generated under report folder if no folder is apecified. Use "mobster.py -h" option to learn more. To learn how to make your own flows, look at the JSON files in the bin/sampleinput/ directory.
+Mobster reports will be generated under report folder if no folder is specified. Use "mobster.py -h" option to learn more. To learn how to make your own flows, look at the JSON files in the bin/sampleinput/ directory.
 
 
 ### Run Mobster with Desktop Chrome ###
@@ -83,7 +83,7 @@ Mobster reports will be generated under report folder if no folder is apecified.
 
     <pre>./bin/mobster.py -t bin/sampleinput/sample.json -p -b</pre>
 
-    Mobster reports will be generated under report folder if no folder is apecified. Use "mobster.py -h" option to learn more. To learn how to make your own flows, look at the scripts in the bin/sampleinput/ directory.
+    Mobster reports will be generated in report folder if no folder is specified. Use "mobster.py -h" option to learn more. To learn how to make your own flows, look at the scripts in the bin/sampleinput/ directory.
 
 **Important Note:**
 If you use Chrome as your web browser normally, it will be annoying to run Mobster with Chrome because Mobster by default uses one of the currently open tab(s) for testing and also clears cookies, etc. This means that, at the end of a test, one of your open tab(s) will be showing the final web page from your test and you will be logged out of all websites. **An easy way to avoid this problem is to run Mobster with [Chromium](http://www.chromium.org/Home) or [Chrome Canary](https://www.google.com/intl/en/chrome/browser/canary.html) so your normal browsing is not affected.** Chrome, Chromium, and Chrome Canary can all be installed side-by-side.
