@@ -1,6 +1,6 @@
 # Mobster #
 
-Mobster is a tool that can help you get deeper understanding into the performance of mobile web applications on real mobile devices.
+Mobster is a tool that can help you get deeper understanding into the performance of web applications on mobile devices and desktop.
 
 It is built off of the WebKit remote debugging protocol and can leverage real devices to extract data that can help you to measure and improve your mobile performance. Below are key features of Mobster.
 
