@@ -75,6 +75,7 @@
           $("#waterfall-container").append(makeWaterfallCanvas(har_json_files[0].log.entries.length))
           new HTTPWaterfallDrawing("waterfall-canvas", har_json_files[0])
           new MemoryMetricsTable("memory-metrics-table", har_json_files)
+          new PageTimingTable("page-timing-table", har_json_files)
           new PageMetricsTable("page-metrics-table", har_json_files)
           new DeviceInfoTable("device-info-table", har_json_files)
 
@@ -86,6 +87,7 @@
           }
           $("#device-info-table").dataTable(tableParams)
           $("#memory-metrics-table").dataTable(tableParams)
+          $("#page-timing-table").dataTable(tableParams)
           $("#page-metrics-table").dataTable(tableParams)
           $("#waterfall-label").text(har_json_files[0].log.pages[0]._pageName)
   		}
@@ -99,9 +101,13 @@
       <h3>Memory Metrics</h3>
       <table id="memory-metrics-table" cellpadding="0" cellspacing="0" border="0" class="dataTable"></table>
       <br/>
+      <h3>Page Timing</h3>
+      <table id="page-timing-table" cellpadding="0" cellspacing="0" border="0" class="dataTable"></table>
+      <br/>
       <h3>Page Metrics</h3>
       <table id="page-metrics-table" cellpadding="0" cellspacing="0" border="0" class="dataTable"></table>
       <br/>
+
     </div>
     <br/>
     <hr/>
