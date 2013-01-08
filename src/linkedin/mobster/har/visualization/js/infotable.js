@@ -120,22 +120,39 @@ var PageLinkedInfoTable = BasicHARInfoTable.extend({
     }
 })
 
-// Metrics table contianing information about page load times and numbers of certain browser events
-var PageMetricsTable = PageLinkedInfoTable.extend({
+var PageTimingTable = PageLinkedInfoTable.extend({
     init: function(elementId, harFiles) {
         var fields = {
             "Page Key":                     this.getPageKey,
-            "DOMContentLoad Time":          this.getDOMContentLoad,
+            "OnContentLoad Time":           this.getOnContentLoad,
             "OnLoad Time":                  this.getOnLoad,
-            "Total CSS Time":               this.getCSSTotalTime,
-            "Number of Style Recalculates": this.getStyleRecalculates,
-            "Number of Paints":             this.getPaints
+            "Total CSS Time":               this.getCSSTotalTime
         }
         this._super(elementId, harFiles, fields)
     },
 
     getCSSTotalTime: function(harFile) {
         return harFile["log"]["pages"][0]["_cssStats"]["_totalTime"]
+    },
+
+    getOnContentLoad: function(harFile) {
+        return harFile["log"]["pages"][0]["pageTimings"]["onContentLoad"] + "ms"
+    },
+
+    getOnLoad: function(harFile) {
+        return harFile["log"]["pages"][0]["pageTimings"]["onLoad"] + "ms"
+    }
+})
+
+var PageMetricsTable = PageLinkedInfoTable.extend({
+    init: function(elementId, harFiles) {
+        var fields = {
+            "Page Key":                     this.getPageKey,
+            "Number of Style Recalculates": this.getStyleRecalculates,
+            "Number of Paints":             this.getPaints,
+            "Total Page Weight":            this.getTotalPageWeight
+        }
+        this._super(elementId, harFiles, fields)
     },
 
     getStyleRecalculates: function(harFile) {
@@ -146,12 +163,13 @@ var PageMetricsTable = PageLinkedInfoTable.extend({
         return harFile["log"]["pages"][0]["_eventStats"]["_paints"]
     },
 
-    getDOMContentLoad: function(harFile) {
-        return harFile["log"]["pages"][0]["pageTimings"]["onContentLoad"] + "ms"
-    },
-
-    getOnLoad: function(harFile) {
-        return harFile["log"]["pages"][0]["pageTimings"]["onLoad"] + "ms"
+    getTotalPageWeight: function(harFile) {
+        var total = 0
+        for (i in harFile["log"]["entries"]) {
+            var entry = harFile["log"]["entries"][i]
+            total += entry["response"]["bodySize"]
+        }
+        return formatAsSizeStr(total)
     }
 })
 
