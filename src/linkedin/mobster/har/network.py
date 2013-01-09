@@ -170,6 +170,10 @@ class NetworkEventHandler(object):
 
     # timings are not included for about: url's
     if not self._requests[request_id]['url'].startswith('about:'):
+      if not 'timing' in params['response']:
+        log.info('No timing information in message')
+        return
+      
       provided_timings = params['response']['timing']
 
       self._request_start_times[request_id] = provided_timings['requestTime']
