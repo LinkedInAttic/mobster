@@ -58,7 +58,8 @@ class RemoteWebKitCommunicator(WebSocketClient):
       id = response['id']
       self._response_callbacks[id](response)
     elif 'method' in response:
-      for callback in self._domain_callbacks[response['method'].split('.')[0]].itervalues():
+      callbacks = self._domain_callbacks[response['method'].split('.')[0]].values()
+      for callback in callbacks: 
         callback(response)
     else:
       log.warn('Unrecognized message: {0}'.format(pformat(response)))
