@@ -5,8 +5,6 @@ import logging
 from linkedin.mobster.utils import memoize
 from utils import wait_until
 
-log = logging.getLogger(__name__)
-
 class RemoteWebKitClient(object):
 
   def __init__(self, communicator):
@@ -46,7 +44,7 @@ class RemoteWebKitClient(object):
         self._got_js_result = True
       elif 'result' in response and 'result' in response['result']:
         if 'wasThrown' in response['result']['result']:
-          log.error('Received error after running JS: {0}\n{1}'.format(js, response['result']))
+          logging.error('Received error after running JS: {0}\n{1}'.format(js, response['result']))
 
         self._js_result = response['result']['result']['value']
         self._got_js_result = True
@@ -96,7 +94,7 @@ class RemoteWebKitClient(object):
     in Chrome Canary as of 7-12-2012 (Chrome v.22).
     """
 
-    log.error('get_proc_memory_info: This function only works on the very latest browsers. Do not use.')
+    logging.error('get_proc_memory_info: This function only works on the very latest browsers. Do not use.')
 
     self._memory_info = None
 
@@ -104,7 +102,7 @@ class RemoteWebKitClient(object):
       try:
         self._memory_info = response['result']
       except KeyError, e:
-        log.error('Browser is too old to feature Memory.getProcessMemoryDistribution')
+        logging.error('Browser is too old to feature Memory.getProcessMemoryDistribution')
 
     self._communicator.send_cmd('Memory.getProcessMemoryDistribution', {}, response_handler)
 
@@ -133,7 +131,7 @@ class RemoteWebKitClient(object):
     profiling, but CSS profiling has not been implemented for this client yet.
     """
     if self._profiling_enabled:
-      log.warning('Profiling already enabled')
+      logging.warning('Profiling already enabled')
       return
 
     def start_callback(m):
@@ -144,7 +142,7 @@ class RemoteWebKitClient(object):
 
   def disable_profiling(self):
     if not self._profiling_enabled:
-      log.warning('Profiling already disabled')
+      logging.warning('Profiling already disabled')
       return
 
     def stop_callback(m):
@@ -158,11 +156,11 @@ class RemoteWebKitClient(object):
     Starts heap profiling, enabling heap snapshots
     """
     if not self.has_heap_profiler():
-      log.error('Browser cannot do heap profiling')
+      logging.error('Browser cannot do heap profiling')
       return
 
     if self._heap_profiling_started:
-      log.warning('Heap profiling already started')
+      logging.warning('Heap profiling already started')
       return
 
     def profile_event_handler(response):
@@ -176,7 +174,7 @@ class RemoteWebKitClient(object):
 
   def stop_heap_profiling(self):
     if not self._heap_profiling_started:
-      log.warning('Heap profile already started')
+      logging.warning('Heap profile already started')
       return
 
     self._communicator.send_cmd('Profiler.stop')
@@ -217,7 +215,7 @@ class RemoteWebKitClient(object):
 
     self._communicator.send_cmd('Profiler.getProfileHeaders', {}, headers_response_handler)
     wait_until(lambda: self._first_profile_id)
-    log.info('Profile ID: %i' % self._first_profile_id)
+    logging.info('Profile ID: %i' % self._first_profile_id)
 
     self._heap_profile_chunks = []
     self._heap_profile_data_recorded = False
@@ -243,7 +241,7 @@ class RemoteWebKitClient(object):
   def enable_debugging(self):
     """Enables debugging, which lets you set JS breakpoints. Also required for doing heap profiles"""
     if self._debugging_enabled:
-      log.error('Debugging already enabled')
+      logging.error('Debugging already enabled')
       return
 
     def start_callback(m):
@@ -254,7 +252,7 @@ class RemoteWebKitClient(object):
 
   def disable_debugging(self):
     if not self._debugging_enabled:
-      log.error('Debugging not enabled')
+      logging.error('Debugging not enabled')
       return
 
     def stop_callback(m):
@@ -277,7 +275,7 @@ class RemoteWebKitClient(object):
     """
 
     if self._timeline_started:
-      log.error('Timeline monitoring already started')
+      logging.error('Timeline monitoring already started')
       return
 
     def start_callback(m):
@@ -290,7 +288,7 @@ class RemoteWebKitClient(object):
 
   def stop_timeline_monitoring(self):
     if not self._timeline_started:
-      log.error('Timeline monitoring not started')
+      logging.error('Timeline monitoring not started')
       return
 
     def stop_callback(m):
@@ -315,7 +313,7 @@ class RemoteWebKitClient(object):
     """
 
     if self._network_enabled:
-      log.error('Network monitoring already enabled')
+      logging.error('Network monitoring already enabled')
       return
 
     def start_callback(m):
@@ -327,7 +325,7 @@ class RemoteWebKitClient(object):
 
   def stop_network_monitoring(self):
     if not self._network_enabled:
-      log.error('Network monitoring not enabled')
+      logging.error('Network monitoring not enabled')
       return
 
     def stop_callback(m):
@@ -353,7 +351,7 @@ class RemoteWebKitClient(object):
 
     def response_handler(response):
       if 'error' in response:
-        log.error('Error received: ' + pformat(response['error']))
+        logging.error('Error received: ' + pformat(response['error']))
       else:
         self._cache_clear_complete = True
 
@@ -365,7 +363,7 @@ class RemoteWebKitClient(object):
 
     def response_handler(response):
       if 'error' in response:
-        log.error('Error received: ' + pformat(response["error"]))
+        logging.error('Error received: ' + pformat(response["error"]))
       else:
         self._cookie_clear_complete = True
 
@@ -389,7 +387,7 @@ class RemoteWebKitClient(object):
     """
 
     if self._page_events_enabled:
-      log.error('Page events already being monitored')
+      logging.error('Page events already being monitored')
       return
     def start_callback(m):
       self._page_events_enabled = True
@@ -401,7 +399,7 @@ class RemoteWebKitClient(object):
 
   def stop_page_event_monitoring(self):
     if not self._page_events_enabled:
-      log.error('Page events not being monitored')
+      logging.error('Page events not being monitored')
       return
 
     def stop_callback(m):
@@ -471,7 +469,7 @@ class RemoteWebKitClient(object):
 
   def start_css_selector_profiling(self):
     if self._css_profiling_started:
-      log.error('CSS Profiling already started')
+      logging.error('CSS Profiling already started')
       return
 
     def response_handler(response):
@@ -482,7 +480,7 @@ class RemoteWebKitClient(object):
 
   def stop_css_selector_profiling(self):
     if not self._css_profiling_started:
-      log.error('CSS selector profiling not started')
+      logging.error('CSS selector profiling not started')
       return
 
     def response_handler(response):
@@ -532,11 +530,11 @@ class RemoteWebKitClient(object):
   def get_browser_name(self):
     if self._device_is_ios():
       if not 'Safari' in self.get_user_agent():
-        log.error('Connected to non-Safari browser on iOS via remote debugging, this should not be possible')
+        logging.error('Connected to non-Safari browser on iOS via remote debugging, this should not be possible')
       return 'Mobile Safari'
     elif self._device_is_android():
       if not 'Chrome' in self.get_user_agent():
-        log.error('Connected to non-Chrome browser on Android via remote debugging, this should not be possible')
+        logging.error('Connected to non-Chrome browser on Android via remote debugging, this should not be possible')
       return 'Chrome for Android'
     else:
       return 'Non-mobile browser'
