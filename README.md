@@ -24,7 +24,7 @@ Mobster provides a simple way for developers to record crucial web performance d
 
 1. Check out Mobster code:
 
-    <pre>git clone https://github.com/armanhb/mobster.git</pre>
+    <pre>git clone https://github.com/linkedin/mobster.git</pre>
 
 2. If you haven't already, install Python. You will need Python 2.6.6 or newer (but not Python 3). 
 
