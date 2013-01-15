@@ -1,8 +1,9 @@
 
 var HTTPWaterfallDrawing = Class.extend({
-    init: function(canvasId, httpArchive) {
+    init: function(canvasId, containerId, httpArchive) {
         this.httpArchiveLog = httpArchive.log
         this.resourceBounds = []
+        $("#" + containerId).append(this.makeCanvas(canvasId))
         this.canvas = $("#" + canvasId)
         this.stage = new Stage(this.canvas[0])
         this.computeTime()
@@ -25,6 +26,13 @@ var HTTPWaterfallDrawing = Class.extend({
         Ticker.setFPS(50)
         Ticker.addListener(this)
         this.update = false
+    },
+
+    makeCanvas: function(canvasId) {
+        var numEntries = this.httpArchiveLog.entries.length
+        var width = Math.max(500, $(window).width() - 30)
+        var height = 27 * numEntries
+        return $("<canvas/>").attr("width", width).attr("height", height).attr("id", canvasId)[0]
     },
 
     initMouseMoveListener: function() {
