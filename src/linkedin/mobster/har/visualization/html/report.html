@@ -72,8 +72,11 @@
   	<script>
   		window.onload = function() {
           var har_json_files = {{ har_json }}
-          $("#waterfall-container").append(makeWaterfallCanvas(har_json_files[0].log.entries.length))
-          new HTTPWaterfallDrawing("waterfall-canvas", har_json_files[0])
+          new HTTPWaterfallDrawing("waterfall-canvas", "waterfall-container", har_json_files[0])
+          $(window).resize(function() {
+            $("#waterfall-canvas").remove()
+            new HTTPWaterfallDrawing("waterfall-canvas", "waterfall-container", har_json_files[0])
+          })
           new MemoryMetricsTable("memory-metrics-table", har_json_files)
           new PageTimingTable("page-timing-table", har_json_files)
           new PageMetricsTable("page-metrics-table", har_json_files)
