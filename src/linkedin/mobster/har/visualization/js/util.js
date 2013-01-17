@@ -56,6 +56,10 @@ var stringOfLength = function(n) {
     }
 }
 
+/*
+ * Add a way to calculate the width of a string in pixels when rendered in the
+ * specified font.
+ */
 String.prototype.width = function(font) {
     var f = font || '10px arial',
         o = $('<div>' + this + '</div>')
@@ -66,11 +70,4 @@ String.prototype.width = function(font) {
     o.remove();
 
     return w;
-}
-
-/*
- * Creates a canvas DOM element with the appropriate size, given the specified number of entries
- */
-function makeWaterfallCanvas(numEntries) {
-    return $("<canvas/>").attr("width", Math.max(500, $(window).width() - 30)).attr("height", 27 * numEntries).attr("id", "waterfall-canvas")[0]
 }
