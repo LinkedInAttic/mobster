@@ -6,6 +6,7 @@ to profile a single page and generate a HAR file containing the results"""
 import argparse
 import commands
 import json
+import logging
 import os
 import subprocess
 import sys
@@ -13,10 +14,11 @@ import time
 
 # Add src directory to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src')))
-
+  
 from linkedin.mobster.har.flowprofiler import FlowProfiler
 from linkedin.mobster.har.merge import merge_by_average
 from linkedin.mobster.har.visualization.report import make_html
+from linkedin.mobster.mobsterconfig import config
 from linkedin.mobster.utils import cmd_exists
 
 LINUX_BROWSER_OPEN_CMD = 'xdg-open'
@@ -105,30 +107,74 @@ def har_file_path(args):
     filename = HAR_FILE_TEMPLATE.format(TIMESTAMP)
     return os.sep.join([output_dir, filename])
 
+def init_logging():
+  log_file = '/var/tmp/mobster.log'
+
+  # clear the log file
+  with open(log_file, 'w'):
+    pass
+
+  # have all logging messages logged to a file
+  logging.basicConfig(level=logging.DEBUG,
+                      format='%(asctime)s %(levelname)s %(message)s',
+                      filename=log_file,
+                      filemode='w')
+
+  # print specific levels of log messages to the console
+  console = logging.StreamHandler()
+  console.setLevel(logging.DEBUG if config["DEBUG"] else logging.WARNING)
+  formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+  console.setFormatter(formatter)
+  logging.getLogger('').addHandler(console)
+
+
 def parse_args():
   arg_parser = argparse.ArgumentParser()
-  arg_parser.add_argument('-t', '--testfile', help='Perform test actions in specified JSON file')
-  arg_parser.add_argument('-ho', '--haroutput', help='Name of output HAR file')
-  arg_parser.add_argument('-hd', '--hardirectory', help='Directory to store output HAR file')
-  arg_parser.add_argument('-i', '--iterations', help='Do profiling task the specified number of times')
-  arg_parser.add_argument('-a', '--average', action='store_true', help='Output the average results of the iterations')
 
-  arg_parser.add_argument('-p', '--report', action='store_true', help='Generate HTML report')
-  arg_parser.add_argument('-po', '--reportoutput', help='Name of output HTML file')
-  arg_parser.add_argument('-pd', '--reportdirectory', help='Directory to store output HAR file')
-  arg_parser.add_argument('-g', '--debug', action='store_true', help='Generate report in debug mode, i.e. CDN script links will not be replaced with source')
+  arg_parser.add_argument('-o', '--port', type=int, help='WebSocket port to use')
+  arg_parser.add_argument('-d', '--debug', action='store_true', \
+    help='Enable debug mode (prints logging messages)')
 
-  arg_parser.add_argument('-b', '--browser', action='store_true', help='Open HTML report in browser after creation')
+  arg_parser.add_argument('-t', '--testfile', \
+    help='Perform test actions in specified JSON file')
+  arg_parser.add_argument('-ho', '--haroutput', \
+    help='Name of output HAR file')
+  arg_parser.add_argument('-hd', '--hardirectory', \
+    help='Directory to store output HAR file')
+  arg_parser.add_argument('-i', '--iterations', \
+    help='Do profiling task the specified number of times')
+  arg_parser.add_argument('-a', '--average', action='store_true', \
+    help='Output the average results of the iterations')
+
+  arg_parser.add_argument('-p', '--report', action='store_true', \
+    help='Generate HTML report')
+  arg_parser.add_argument('-po', '--reportoutput', \
+    help='Name of output HTML file')
+  arg_parser.add_argument('-pd', '--reportdirectory', \
+    help='Directory to store output HAR file')
+  arg_parser.add_argument('-g', '--reportdebug', action='store_true', \
+    help='Generate report in debug mode, i.e. CDN script links will not be' \
+         'replaced with source')
+
+  arg_parser.add_argument('-b', '--browser', action='store_true', \
+    help='Open HTML report in browser after creation')
   
   # Used if and only if generating report with results from previous test
-  arg_parser.add_argument('-r', '--har', help="Used specified name for JSON file")
+  arg_parser.add_argument('-r', '--har', \
+    help="Used specified name for JSON file")
   
   return arg_parser.parse_args()
 
 ### ENTRY POINT ###
 if __name__ == '__main__':
   args = parse_args()
-
+  
+  if args.port:
+    config["WS_DEBUG_PORT"] = args.port
+  if args.debug:
+    config["DEBUG"] = True
+  init_logging()
+  
   if args.har:
     write_report(args)
   else:

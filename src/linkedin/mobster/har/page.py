@@ -2,20 +2,17 @@ import logging
 import time
 import sys
 
-log = logging.getLogger(__name__)
-
 class PageEventHandler(object):
   def __init__(self):
     self.page_loaded = False
 
   def process_event(self, message):
     if message['method'] == 'Page.loadEventFired':
-      log.info('Page.loadEventFired recorded')
+      logging.info('Page.loadEventFired recorded')
       self.page_loaded = True
 
 
 class PageLoadNotifier(object):
-
   def __init__(self, wait_for_page_load_event, network_event_timeout=3):
     self._received_page_load_event = False
     self._network_event_timeout = network_event_timeout
@@ -30,7 +27,7 @@ class PageLoadNotifier(object):
 
   def process_page_event(self, message):
     if message['method'] == 'Page.loadEventFired':
-      log.info('Page.loadEventFired recorded')
+      logging.info('Page.loadEventFired recorded')
       self._received_page_load_event = True
 
 

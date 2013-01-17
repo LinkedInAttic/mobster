@@ -2,8 +2,6 @@ import logging
 
 from linkedin.mobster.utils import running_avg
 
-log = logging.getLogger(__name__)
-
 timeline_event_blacklist = ['Program']
 
 class TimelineEventHandler(object):
@@ -66,7 +64,7 @@ class TimelineEventHandler(object):
           #self.max_js_event_listeners = max(self.max_js_event_listeners, record['counters']['jsEventListeners'])
           #self.max_nodes = max(self.max_nodes, record['counters']['nodes'])
         except KeyError, e:
-          log.warning(e.message)
+          logging.warning('Could not find key {0} in response'.format(e.message))
 
         if record['type'] == 'GCEvent':
           self.gc_events += 1
