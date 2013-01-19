@@ -1,6 +1,8 @@
+from collections import defaultdict
 from pprint import pformat
 import re
 import logging
+from uuid import uuid4
 
 from linkedin.mobster.utils import memoize
 from utils import wait_until
@@ -21,6 +23,8 @@ class RemoteWebKitClient(object):
     self._page_events_enabled = False
     self._css_profiling_started = False
     self._css_profile = None
+    self._received = defaultdict(lambda: False)
+    self._responses = {}
 
 
   def stop(self):
@@ -73,18 +77,28 @@ class RemoteWebKitClient(object):
   # --------------------------------------------------------------------------
   # MEMORY
   # --------------------------------------------------------------------------
+  
+  def sendw(self, command, args):
+    """
+    Send a command with the given arguments, wait till a response is received, 
+    and return it.
+    """
+    rec_id = uuid4().hex
+    
+    def response_handler(response):
+      self._received[rec_id] = True
+      self._responses[rec_id] = response['result']
 
+    self._communicator.send_cmd(command, args, response_handler)
+
+    wait_until(lambda: self._received[rec_id])
+    return self._responses[rec_id]
+
+
+  
   def get_dom_node_count(self):
     """Returns an object containing groups of DOM nodes and their respective sizes"""
-    self._dom_node_count = None
-
-    def response_handler(response):
-      self._dom_node_count = response['result']
-
-    self._communicator.send_cmd('Memory.getDOMNodeCount', {}, response_handler)
-
-    wait_until(lambda: self._dom_node_count)
-    return self._dom_node_count
+    return self.sendw('Memory.getDOMNodeCount', {})
 
   def get_proc_memory_info(self):
     """
@@ -119,13 +133,7 @@ class RemoteWebKitClient(object):
 
   @memoize
   def has_heap_profiler(self):
-    def response_handler(response):
-      self._has_heap_profiler = response['result']['result']
-
-    self._communicator.send_cmd('Profiler.hasHeapProfiler', {}, response_handler)
-
-    wait_until(lambda: self._has_heap_profiler != None)
-    return self._has_heap_profiler
+    return self.sendw('Profiler.hasHeapProfiler', {})['result']
 
   def enable_profiling(self):
     """
@@ -135,23 +143,18 @@ class RemoteWebKitClient(object):
     if self._profiling_enabled:
       log.warning('Profiling already enabled')
       return
-
-    def start_callback(m):
-      self._profiling_enabled = True
-
-    self._communicator.send_cmd('Profiler.enable', {})
-    wait_until(lambda: self._profiling_enabled)
+    
+    self.sendw('Profiler.enable', {})
+    self._profiling_enabled = True
 
   def disable_profiling(self):
     if not self._profiling_enabled:
       log.warning('Profiling already disabled')
       return
 
-    def stop_callback(m):
-      self._profiling_enabled = False
+    self.sendw('Profiler.disable', {})
+    self._profiling_enabled = False
 
-    self._communicator.send_cmd('Profiler.disable')
-    wait_until(lambda: not self._profiling_enabled)
 
   def start_heap_profiling(self, callback):
     """
