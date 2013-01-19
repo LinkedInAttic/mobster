@@ -12,8 +12,8 @@ class FlowProfiler(RemoteWebKitClient):
   """
   Runs a flow and records profiling information for each navigation. Generates HAR file.
   """
-  def __init__(self, test_file, iterations=1, communicator=RemoteWebKitCommunicator()):
-    super(FlowProfiler, self).__init__(communicator)
+  def __init__(self, test_file, iterations=1):
+    super(FlowProfiler, self).__init__(RemoteWebKitCommunicator())
     assert iterations > 0, "iterations must be a positive integer"
     self._iterations = iterations
     self._page_event_handler = None
