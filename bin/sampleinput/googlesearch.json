@@ -1,0 +1,32 @@
+{
+    "name" : "Google Search Flow",
+    "navigations": [
+        [
+            {
+                "type": "navigate",
+                "params": {
+                    "url": "http://www.google.com"
+                },
+                "page-name": "Google Home Page",
+                "network-timeout": 2
+            }
+        ],
+        [ 
+            {
+                "type":  "textfield-set",
+                "params": {
+                    "id": "gbqfq",
+                    "value": "LinkedIn"
+                }
+            },
+            {
+                "type": "form-submit",
+                "params": {
+                    "id": "gbqf"
+                },
+                "page-name": "Search Results",
+                "network-timeout": 2
+            }
+        ]
+    ]
+}
