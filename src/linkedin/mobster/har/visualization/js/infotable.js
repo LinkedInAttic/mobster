@@ -92,10 +92,8 @@ var PageLinkedInfoTable = BasicHARInfoTable.extend({
         link.onclick = function() {
             var waterfallContainer = document.getElementById("waterfall-container")
             waterfallContainer.removeChild(document.getElementById("waterfall-canvas"))
-
-            waterfallContainer.appendChild(makeWaterfallCanvas(harFile.log.entries.length))
+            new HTTPWaterfallDrawing("waterfall-canvas", "waterfall-container", harFile)
             $("#waterfall-label").text(harFile.log.pages[0]._pageName)
-            new HTTPWaterfallDrawing("waterfall-canvas", harFile)
         }
         linkCell.appendChild(link)
         row.appendChild(linkCell)

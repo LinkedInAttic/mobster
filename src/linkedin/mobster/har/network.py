@@ -134,7 +134,7 @@ class NetworkEventHandler(object):
       'dataReceived': self.process_data_received,
       'loadingFinished': self.process_loading_finished,
       'requestServedFromMemoryCache': lambda m: None,
-      'loadingFailed': lambda m: logging.warning("Received loadingFailed message: \n{0}".format(m))
+      'loadingFailed': lambda m: logging.info("Received loadingFailed message: \n{0}".format(m))
     }[message_type](message)
 
   def parse_msg(self, msg):
