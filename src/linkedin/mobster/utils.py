@@ -18,7 +18,7 @@ def format_time(seconds):
 def datetime_to_millis(dt):
   return mktime(dt.timetuple()) * 1e3 + dt.microsecond / 1e3
 
-def wait_until(cond_func, timeout=300):
+def wait_until(cond_func, timeout=120):
   """Wait until the specified function (with no args) returns true"""
   start_time = time()
   while not cond_func():
