@@ -3,8 +3,6 @@ import logging
 
 from linkedin.mobster.utils import format_time
 
-log = logging.getLogger(__name__)
-
 class NetworkEventHandler(object):
   def __init__(self):
     # request start times in seconds
@@ -136,7 +134,7 @@ class NetworkEventHandler(object):
       'dataReceived': self.process_data_received,
       'loadingFinished': self.process_loading_finished,
       'requestServedFromMemoryCache': lambda m: None,
-      'loadingFailed': lambda m: log.warning("Received loadingFailed message: \n{0}".format(m))
+      'loadingFailed': lambda m: logging.info("Received loadingFailed message: \n{0}".format(m))
     }[message_type](message)
 
   def parse_msg(self, msg):
@@ -156,7 +154,7 @@ class NetworkEventHandler(object):
     self._request_start_times[request_id] = params['timestamp']
 
   def process_request_served_from_cache(self, message):
-    log.info('Received request served from cache message: \n{0}'.format(message))
+    logging.info('Received request served from cache message: \n{0}'.format(message))
 
   def process_response_received(self, message):
     (params, request_id, frame_id, timestamp) = self.parse_msg(message)
