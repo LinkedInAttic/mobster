@@ -176,17 +176,12 @@ var MemoryMetricsTable = PageLinkedInfoTable.extend({
     init: function(elementId, harFiles) {
         var fields = {
             "Page Key":                     this.getPageKey,
-            "Maximum Allocated Heap":       this.getMaxAllocHeap,
             "Maximum Used Heap":            this.getMaxUsedHeap,
             "Average Used Heap":            this.getAvgUsedHeap,
             "Number of Nodes":              this.getNumNodes,
             "Number of GC Events":          this.getGCEvents
         }
         this._super(elementId, harFiles, fields)
-    },
-
-    getMaxAllocHeap: function(harFile)  {
-        return formatAsSizeStr(harFile.log.pages[0]._memoryStats._maxTotalHeapSize)
     },
 
     getMaxUsedHeap: function(harFile) {
