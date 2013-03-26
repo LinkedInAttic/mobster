@@ -24,6 +24,29 @@ class RemoteWebKitClient(object):
     self._received = defaultdict(lambda: False)
     self._responses = {}
 
+  # --------------------------------------------------------------------------
+  # UTILITY FUNCTIONS
+  # --------------------------------------------------------------------------
+
+  def _sendw(self, command, args={}):
+    """
+    Send a command with the given arguments, wait till a response is received, 
+    and return it.
+    """
+    rec_id = uuid4().hex
+    
+    def response_handler(response):
+      self._received[rec_id] = True
+      self._responses[rec_id] = response
+
+    self._communicator.send_cmd(command, args, response_handler)
+
+    wait_until(lambda: self._received[rec_id])
+    response = self._responses[rec_id]
+    del self._received[rec_id]
+    del self._responses[rec_id]
+    return response
+
 
   def stop(self):
     """
@@ -76,27 +99,10 @@ class RemoteWebKitClient(object):
   # MEMORY
   # --------------------------------------------------------------------------
   
-  def sendw(self, command, args):
-    """
-    Send a command with the given arguments, wait till a response is received, 
-    and return it.
-    """
-    rec_id = uuid4().hex
     
-    def response_handler(response):
-      self._received[rec_id] = True
-      self._responses[rec_id] = response['result']
-
-    self._communicator.send_cmd(command, args, response_handler)
-
-    wait_until(lambda: self._received[rec_id])
-    return self._responses[rec_id]
-
-
-  
   def get_dom_node_count(self):
     """Returns an object containing groups of DOM nodes and their respective sizes"""
-    return self.sendw('Memory.getDOMNodeCount', {})
+    return self._sendw('Memory.getDOMNodeCount', {})['result']
 
   def get_proc_memory_info(self):
     """
@@ -131,7 +137,7 @@ class RemoteWebKitClient(object):
 
   @memoize
   def has_heap_profiler(self):
-    return self.sendw('Profiler.hasHeapProfiler', {})['result']
+    return self._sendw('Profiler.hasHeapProfiler', {})['result']
 
   def enable_profiling(self):
     """
@@ -142,7 +148,7 @@ class RemoteWebKitClient(object):
       logging.warning('Profiling already enabled')
       return
     
-    self.sendw('Profiler.enable', {})
+    self._sendw('Profiler.enable', {})
     self._profiling_enabled = True
 
   def disable_profiling(self):
@@ -150,7 +156,7 @@ class RemoteWebKitClient(object):
       logging.warning('Profiling already disabled')
       return
 
-    self.sendw('Profiler.disable', {})
+    self._sendw('Profiler.disable', {})
     self._profiling_enabled = False
 
 
@@ -171,7 +177,7 @@ class RemoteWebKitClient(object):
         callback(response)
 
     self._communicator.add_domain_callback('Profiler', 'profile_event', profile_event_handler)
-    self._communicator.send_cmd('Profiler.start')
+    self._sendw('Profiler.start')
     self._heap_profiling_started = True
 
 
@@ -180,7 +186,7 @@ class RemoteWebKitClient(object):
       logging.warning('Heap profile already started')
       return
 
-    self._communicator.send_cmd('Profiler.stop')
+    self._sendw('Profiler.stop')
     self._communicator.remove_domain_callback('Profiler', 'profile_event')
     self._heap_profiling_started = False
 
@@ -193,7 +199,7 @@ class RemoteWebKitClient(object):
         self._heap_snapshot_finished = (response['params']['done'] == response['params']['total'])
 
     self._communicator.add_domain_callback('Profiler', 'heap_snapshot_progress', progress_callback)
-    self._communicator.send_cmd('Profiler.takeHeapSnapshot')
+    self._sendw('Profiler.takeHeapSnapshot')
 
     wait_until(lambda: self._heap_snapshot_finished)
     self._communicator.remove_domain_callback('Profiler', 'heap_snapshot_progress')
@@ -201,23 +207,16 @@ class RemoteWebKitClient(object):
 
   def clear_profiles(self):
     """Deletes all profiles that have been recorded (e.g. heap profiles, cpu profiles...)"""
-    self._cleared_heap_profiles = False
-
-    def response_handler(response):
-      self._cleared_heap_profiles = True
-
-    self._communicator.send_cmd('Profiler.clearProfiles', {}, response_handler)
-    wait_until(lambda: self._cleared_heap_profiles)
+    
+    self._sendw('Profiler.clearProfiles')
 
   def get_heap_profile(self):
     """Returns raw heap profiling data"""
     self._first_profile_id = None
 
-    def headers_response_handler(response):
-      self._first_profile_id = response['result']['headers'][0]['uid']
+    first_profile_id = \
+      self._sendw('Profiler.getProfileHeaders')['result']['headers'][0]['uid']
 
-    self._communicator.send_cmd('Profiler.getProfileHeaders', {}, headers_response_handler)
-    wait_until(lambda: self._first_profile_id)
     logging.info('Profile ID: %i' % self._first_profile_id)
 
     self._heap_profile_chunks = []
@@ -247,21 +246,15 @@ class RemoteWebKitClient(object):
       logging.error('Debugging already enabled')
       return
 
-    def start_callback(m):
-      self._debugging_enabled = True
-
-    self._communicator.send_cmd('Debugger.enable', {}, start_callback)
-    wait_until(lambda: self._debugging_enabled)
+    self._sendw('Debugger.enable')
+    self._debugging_enabled = True
 
   def disable_debugging(self):
     if not self._debugging_enabled:
       logging.error('Debugging not enabled')
       return
 
-    def stop_callback(m):
-      self._debugging_enabled = False
-
-    self._communicator.send_cmd('Debugger.disable', {}, stop_callback)
+    self._sendw('Debugger.disable')
     self._debugging_enabled = False
 
   # --------------------------------------------------------------------------
@@ -281,25 +274,19 @@ class RemoteWebKitClient(object):
       logging.error('Timeline monitoring already started')
       return
 
-    def start_callback(m):
-      self._timeline_started = True
-
     self._communicator.add_domain_callback('Timeline', 'timeline_event', callback)
-    self._communicator.send_cmd('Timeline.setIncludeMemoryDetails', {'enabled': True})
-    self._communicator.send_cmd('Timeline.start', {}, start_callback)
-    wait_until(lambda: self._timeline_started)
+    self._sendw('Timeline.setIncludeMemoryDetails', {'enabled': True})
+    self._sendw('Timeline.start')
+    self._timeline_started = True
 
   def stop_timeline_monitoring(self):
     if not self._timeline_started:
       logging.error('Timeline monitoring not started')
       return
 
-    def stop_callback(m):
-      self._timeline_started = False
-
-    self._communicator.send_cmd('Timeline.stop', {}, stop_callback)
+    self._sendw('Timeline.stop')
     self._communicator.remove_domain_callbacks('Timeline')
-    wait_until(lambda: not self._timeline_started)
+    self._timeline_started = False
 
   # --------------------------------------------------------------------------
   # NETWORK
@@ -319,59 +306,40 @@ class RemoteWebKitClient(object):
       logging.error('Network monitoring already enabled')
       return
 
-    def start_callback(m):
-      self._network_enabled = True
-
     self._communicator.add_domain_callback('Network', 'network_event', callback)
-    self._communicator.send_cmd('Network.enable', {}, start_callback)
-    wait_until(lambda: self._network_enabled)
+    self._sendw('Network.enable')
+    self._network_enabled = True
 
   def stop_network_monitoring(self):
     if not self._network_enabled:
       logging.error('Network monitoring not enabled')
       return
 
-    def stop_callback(m):
-      self._network_enabled = False
-
-    self._communicator.send_cmd('Network.disable', {}, stop_callback)
+    self._sendw('Network.disable')
     self._communicator.remove_domain_callbacks('Network')
-    wait_until(lambda: not self._network_enabled)
+    self._network_enabled = False
 
   @memoize
   def can_clear_http_cache(self):
     """Returns true if browser supports clearing the cache via remote debugging protocol"""
-    def response_handler(response):
-      self._can_clear_cache = response['result']['result']
-
-    self._communicator.send_cmd('Network.canClearBrowserCache', {}, response_handler)
-
-    wait_until(lambda: self._can_clear_cache != None)
-    return self._can_clear_cache
+    
+    return self._sendw('Network.canClearBrowserCache')['result']['result']
 
   def clear_http_cache(self):
     self._cache_clear_complete = False
 
-    def response_handler(response):
-      if 'error' in response:
-        logging.error('Error received: ' + pformat(response['error']))
-      else:
-        self._cache_clear_complete = True
+    response = self._sendw('Network.clearBrowserCache')
+    if 'error' in response:
+      logging.error('Error received: ' + pformat(response['error']))
 
-    self._communicator.send_cmd('Network.clearBrowserCache', {}, response_handler)
-    wait_until(lambda: self._cache_clear_complete)
 
   def clear_cookies(self):
     self._cookie_clear_complete = False
+    
+    response = self._sendw('Network.clearBrowserCookies')
 
-    def response_handler(response):
-      if 'error' in response:
-        logging.error('Error received: ' + pformat(response["error"]))
-      else:
-        self._cookie_clear_complete = True
-
-    self._communicator.send_cmd('Network.clearBrowserCookies', {}, response_handler)
-    wait_until(lambda: self._cookie_clear_complete)
+    if 'error' in response:
+      logging.error('Error received: ' + pformat(response["error"]))
 
   # --------------------------------------------------------------------------
   # PAGE
@@ -392,35 +360,24 @@ class RemoteWebKitClient(object):
     if self._page_events_enabled:
       logging.error('Page events already being monitored')
       return
-    def start_callback(m):
-      self._page_events_enabled = True
 
     self._communicator.add_domain_callback('Page', 'page_event', callback)
-    self._communicator.send_cmd('Page.enable', {}, start_callback)
-
-    wait_until(lambda: self._page_events_enabled)
+    self._sendw('Page.enable')
+    self._page_events_enabled = True
 
   def stop_page_event_monitoring(self):
     if not self._page_events_enabled:
       logging.error('Page events not being monitored')
       return
 
-    def stop_callback(m):
-      self._page_events_enabled = False
-
-    self._communicator.send_cmd('Page.disable', {}, stop_callback)
-    wait_until(lambda: not self._page_events_enabled)
-    self._communicator.remove_domain_callbacks('Page')
+    self._sendw('Page.disable')
+    self._communicator.remove_domain_callback('Page', 'page_event')
+    self._page_events_enabled = False
 
   def navigate_to(self, url):
     """Navigates the browser window to the given url"""
-    self._navigated = False
 
-    def response_handler(response):
-      self._navigated = True
-
-    self._communicator.send_cmd('Page.navigate', {'url': url}, response_handler)
-    wait_until(lambda: self._navigated)
+    self._sendw('Page.navigate', {'url': url})
 
   # ----------------
   # Form Interaction
@@ -475,24 +432,17 @@ class RemoteWebKitClient(object):
       logging.error('CSS Profiling already started')
       return
 
-    def response_handler(response):
-      self._css_profiling_started = True
-
-    self._communicator.send_cmd('CSS.startSelectorProfiler', {}, response_handler)
-    wait_until(lambda: self._css_profiling_started)
+    self._sendw('CSS.startSelectorProfiler')
+    self._css_profiling_started = True
 
   def stop_css_selector_profiling(self):
     if not self._css_profiling_started:
       logging.error('CSS selector profiling not started')
       return
 
-    def response_handler(response):
-      self._css_profiling_started = False
-      self._css_profile = response
-
-    self._communicator.send_cmd('CSS.stopSelectorProfiler', {}, response_handler)
-    wait_until(lambda: not self._css_profiling_started)
-    return self._css_profile
+    result = self._sendw('CSS.stopSelectorProfiler')
+    self._css_profiling_started = False
+    return result
 
   # ----------------
   # Device/Browser Detection
@@ -550,8 +500,3 @@ class RemoteWebKitClient(object):
       return re.search('Chrome/([0-9\.]+)', self.get_user_agent()).groups()[0]
     else:
       return ''
-
-
-
-
-
