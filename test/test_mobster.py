@@ -1,5 +1,15 @@
 import json
+import os
 from pprint import pformat
+import sys
+
+# THIS TEST IS OUT OF DATE
+print 'TEST IS OUT OF DATE. EXITING.'
+sys.exit(0)
+
+# Add src directory to path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src')))
+
 
 from linkedin.mobster.har.flowprofiler import FlowProfiler
 
@@ -110,8 +120,8 @@ def validate_har_structure(har):
   for field, (type, func) in validation_funcs.iteritems():
     validate_field((har['log'], 'log'), field, type, func)
 
-gen = FlowProfiler('../bin/sampleinput/limobilelogin.json')
-hars = gen.make()
+gen = FlowProfiler('../bin/sampleinput/sample.json')
+hars = gen.profile()
 
 for har in hars:
   # remove unicode strings from dictionary to make type verification easier
