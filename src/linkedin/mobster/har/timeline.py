@@ -9,8 +9,6 @@ class TimelineEventHandler(object):
     self.used_heap_init  = None
     self.used_heap_max  = -1
     self.used_heap_avg = -1
-    self.total_heap_init = None
-    self.total_heap_max = -1
     self.max_documents = -1
     self.max_js_event_listeners = -1
     self.max_nodes = -1
@@ -25,9 +23,6 @@ class TimelineEventHandler(object):
       '_initialUsedHeapSize': self.used_heap_init,
       '_maxUsedHeapSize': self.used_heap_max,
       '_avgUsedHeapSize': self.used_heap_avg,
-
-      '_initialTotalHeapSize': self.total_heap_init,
-      '_maxTotalHeapSize': self.total_heap_max,
 
       '_maxDocuments': self.max_documents,
       '_maxJsEventListeners': self.max_js_event_listeners,
@@ -52,10 +47,8 @@ class TimelineEventHandler(object):
           self.used_heap_init = self.used_heap_init or record['usedHeapSize']
           self._used_heap_avg_calc.next()
           self.used_heap_avg = self._used_heap_avg_calc.send(record['usedHeapSize'])
-          self.total_heap_init = self.total_heap_init or record['totalHeapSize']
 
           self.used_heap_max = max(self.used_heap_max, record['usedHeapSize'])
-          self.total_heap_max = max(self.total_heap_max, record['totalHeapSize'])
 
           # The following statments keep track of metrics only available in Chrome 19+. Android Chrome is currently
           # at version 18, so we will not enable these until it is updated.
