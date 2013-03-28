@@ -8,6 +8,7 @@ import commands
 import json
 import logging
 import os
+import signal
 import subprocess
 import sys
 import time
@@ -34,17 +35,33 @@ def run(args):
   Run a test with the specified parameters, and return the HTTP Archive
   (HAR) File represented as a dictionary.
   """
+  if args.ios:
+    kill_existing_proxy_processes()
+    DEVNULL = open(os.devnull, 'wb')
+    p = subprocess.Popen('ios_webkit_debug_proxy', stdout=DEVNULL, stderr=DEVNULL)
+    logging.info("Giving proxy time to start") 
+    time.sleep(2)
   har_gen = FlowProfiler(args.testfile, int(args.iterations))   \
             if args.iterations else FlowProfiler(args.testfile)
 
   # profiling_results is a list of lists containing HARs for each page in a run
   profiling_results = har_gen.profile()
-
+  if args.ios:
+    p.terminate()
   if args.average:
     return [merge_by_average(page_results) \
             for page_results in zip(*profiling_results)]
   else:
     return profiling_results[-1]
+
+def kill_existing_proxy_processes():
+  p = subprocess.Popen(['ps', '-A'], stdout=subprocess.PIPE)
+  out, err = p.communicate()
+
+  for line in out.splitlines():
+    if 'ios_webkit' in line:
+      pid = int(line.split(None, 1)[0])
+      os.kill(pid, signal.SIGKILL)
 
 def write_report(args):
   """
@@ -158,6 +175,8 @@ def parse_args():
 
   arg_parser.add_argument('-b', '--browser', action='store_true', \
     help='Open HTML report in browser after creation')
+
+  arg_parser.add_argument('--ios', action='store_true', help='Run iOS debug proxy')
   
   # Used if and only if generating report with results from previous test
   arg_parser.add_argument('-r', '--har', \

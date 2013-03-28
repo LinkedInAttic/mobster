@@ -2,3 +2,4 @@
 report
 bin/sampleinput/limobilelogin.json
 env/
+*.swp

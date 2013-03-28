@@ -10,6 +10,10 @@ class PageEventHandler(object):
     if message['method'] == 'Page.loadEventFired':
       logging.info('Page.loadEventFired recorded')
       self.page_loaded = True
+      self.on_load = message['params']['timestamp']
+    elif message['method'] == 'Page.domContentEventFired':
+      logging.info('Page.domContentEventFired recorded')
+      self.dom_content_load = message['params']['timestamp']
 
 
 class PageLoadNotifier(object):
@@ -29,7 +33,6 @@ class PageLoadNotifier(object):
     if message['method'] == 'Page.loadEventFired':
       logging.info('Page.loadEventFired recorded')
       self._received_page_load_event = True
-
 
   def process_network_event(self, message):
     self._last_network_event_time = time.time()

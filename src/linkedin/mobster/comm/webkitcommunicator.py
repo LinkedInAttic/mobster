@@ -1,3 +1,4 @@
+from abc import ABCMeta, abstractmethod
 from collections import defaultdict
 import json
 import logging
@@ -11,7 +12,7 @@ from ws4py.client.threadedclient import WebSocketClient
 
 from linkedin.mobster.mobsterconfig import config
 
-class RemoteWebKitCommunicator(WebSocketClient):
+class WebKitCommunicator(WebSocketClient):
   """
   Asynchronous interface for communicating with a remote WebKit-based browser 
   via remote debugging protocol. Currently tested only on desktop and Android 
@@ -27,14 +28,22 @@ class RemoteWebKitCommunicator(WebSocketClient):
   """
 
   def __init__(self, page_num = 0):
+    self._page_num = page_num
     self._counter = 0
     self._response_callbacks = {}
     self._domain_callbacks = defaultdict(lambda: {})
     self._stopped = False
     self._command_queue = Queue()
+    debug_ws_url = self.get_ws_debug_url()
+    super(WebKitCommunicator, self).__init__(debug_ws_url)
+    self.start()
+  
+  def get_ws_debug_url(self):
+    """
+    Returns the WebSocket debugging URL used by the browser for the specified
+    page number.
+    """
 
-    # Access list of open browser pages and pick the page with the specified 
-    # index
     url = 'http://localhost:{0}/json'.format(config["WS_DEBUG_PORT"])
     try:
       response = urllib2.urlopen(url).read()
@@ -44,15 +53,12 @@ class RemoteWebKitCommunicator(WebSocketClient):
       sys.exit()
 
     page_info = json.loads(response)
-    page = page_info[page_num]
-    debug_ws_url = page['webSocketDebuggerUrl']
+    return page_info[self._page_num]['webSocketDebuggerUrl']
 
-    super(RemoteWebKitCommunicator, self).__init__(debug_ws_url)
-    self.start()
 
   def opened(self): pass
   def closed(self, code, reason=None): pass
-
+  
   def received_message(self, messageData):
     """Called whenever the WebSocket receives a message"""
     response = json.loads(str(messageData))

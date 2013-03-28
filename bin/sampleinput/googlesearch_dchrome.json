@@ -1,3 +1,7 @@
+/*
+ * Searches for "LinkedIn" in Google. Only tested on Desktop Chrome.
+ */
+
 {
     "name" : "Google Search Flow",
     "navigations": [

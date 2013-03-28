@@ -72,8 +72,11 @@ class RemoteWebKitClient(object):
       elif 'result' in response and 'result' in response['result']:
         if 'wasThrown' in response['result']['result']:
           logging.error('Received error after running JS: {0}\n{1}'.format(js, response['result']))
-
-        self._js_result = response['result']['result']['value']
+        
+        try:
+          self._js_result = response['result']['result']['value']
+        except KeyError:
+          logging.error('Javascript failed: {0}'.format(js))
         self._got_js_result = True
 
     self._communicator.send_cmd('Runtime.evaluate',
@@ -474,8 +477,9 @@ class RemoteWebKitClient(object):
     if self._device_is_android():
       return re.search('Android\s+([\d\.]+)',self.get_user_agent()).groups()[0]
     elif self._device_is_ios():
-      start = self.get_user_agent().index('OS')
-      return self.get_user_agent()[start + 3, start + 6].replace('_', '.')
+      user_agent = self.get_user_agent()
+      start = user_agent.index('OS')
+      return user_agent[start + 3:start + 8].replace('_', '.')
     else:
       return ''
 
