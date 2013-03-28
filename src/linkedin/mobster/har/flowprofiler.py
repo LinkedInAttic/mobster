@@ -1,19 +1,21 @@
 import json
+import logging
+import time
 
+from linkedin.mobster.comm.webkitcommunicator import WebKitCommunicator
 from linkedin.mobster.har.css import CSSProfileParser
 from linkedin.mobster.har.network import NetworkEventHandler
 from linkedin.mobster.har.page import PageEventHandler, PageLoadNotifier
 from linkedin.mobster.har.timeline import TimelineEventHandler
 from linkedin.mobster.utils import wait_until, format_time
 from linkedin.mobster.webkitclient import RemoteWebKitClient
-from linkedin.mobster.webkitcommunicator import RemoteWebKitCommunicator
 
 class FlowProfiler(RemoteWebKitClient):
   """
   Runs a flow and records profiling information for each navigation. Generates HAR file.
   """
   def __init__(self, test_file, iterations=1):
-    super(FlowProfiler, self).__init__(RemoteWebKitCommunicator())
+    super(FlowProfiler, self).__init__(WebKitCommunicator())
     assert iterations > 0, "iterations must be a positive integer"
     self._iterations = iterations
     self._page_event_handler = None
@@ -39,7 +41,10 @@ class FlowProfiler(RemoteWebKitClient):
 
     for x in range(0, self._iterations):
       hars = []
-      self.clear_http_cache()
+      if self.can_clear_http_cache():
+        self.clear_http_cache()
+      else:
+        logging.info('Not clearing browser cache')
       self.clear_cookies()
 
       # Navigate to about:blank, to reset memory, etc.
@@ -51,7 +56,7 @@ class FlowProfiler(RemoteWebKitClient):
 
       for navigation in self._test['navigations']:
         assert len(navigation) > 0, 'Each navigation must have at least one action'
-
+        self._start_time = time.time()
         # do all the actions except the last one, because the last action causes the actual page navigation
         for i in range(0, len(navigation) - 1):
           self.process_action(navigation[i])
@@ -150,10 +155,23 @@ class FlowProfiler(RemoteWebKitClient):
     Returns a dictionary containing onContentLoad and onLoad times, both in (whole) milliseconds from
     the start of the request
     """
-    browser_timings = self.get_window_performance()
+    #FIXME the two different methods of calculating timings need to be merged
     first_request_start = self._network_event_handler.get_first_request_time()
-    return {
-      'onContentLoad': max(int(browser_timings['domContentLoadedEventEnd'] - (first_request_start * 1000)), -1),
-      'onLoad' : max(int(browser_timings['loadEventEnd'] - (first_request_start * 1000)), -1)
-    }
+    if self.get_os_name() == 'iOS':
+      onload = int(1000 * \
+        (self._page_event_handler.dom_content_load - self._start_time))
+      domcontent = int(1000 * \
+        (self._page_event_handler.on_load - self._start_time))
+
+      return {
+        'onContentLoad': max(domcontent, -1),
+        'onLoad' : max(onload, -1)
+      } 
+    else:
+      browser_timings = self.get_window_performance()
+      return {
+        'onContentLoad': max(int(browser_timings['domContentLoadedEventEnd'] - (first_request_start * 1000)), -1),
+        'onLoad' : max(int(browser_timings['loadEventEnd'] - (first_request_start * 1000)), -1)
+      }
+
 

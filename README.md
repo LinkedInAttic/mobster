@@ -47,6 +47,11 @@ Mobster provides a simple way for developers to record crucial web performance d
 
 4. In the Chrome settings, enable USB Debugging (Advanced -> Developer Tools -> Enable USB Web Debugging)
 
+#### iOS-Specific Prerequisites ####
+1. Install the [iOS WebKit Debugging Proxy](https://github.com/google/ios-webkit-debug-proxy) on your computer. 
+
+2. In the Safari settings, enable Web Inspector (Safari Settings -> Advanced -> Web Inspector)
+
 ### Run Mobster with an Android Device ###
 
 1. Execute the command below under the Android SDK folder:
@@ -87,6 +92,16 @@ Mobster provides a simple way for developers to record crucial web performance d
 **Important Note:**
 If you use Chrome as your web browser normally, it will be annoying to run Mobster with Chrome because Mobster by default uses one of the currently open tab(s) for testing and also clears cookies, etc. This means that, at the end of a test, one of your open tab(s) will be showing the final web page from your test and you will be logged out of all websites. **An easy way to avoid this problem is to run Mobster with [Chromium](http://www.chromium.org/Home) or [Chrome Canary](https://www.google.com/intl/en/chrome/browser/canary.html) so your normal browsing is not affected.** Chrome, Chromium, and Chrome Canary can all be installed side-by-side.
 
+### Run Mobster with an iOS Device ###
+
+
+1. Open Safari on the device. Note that **Mobster will clear cookies** and other browsing data. The tab currently being viewed will be used by Mobster to navigate to webpages. Currently, Safari must be visible on the screen for Mobster to work.
+
+2. Run the main Mobster script with a sample flow in your Mobster home directory. Note the --ios argument, which tells Mobster to start the iOS webkit debugging proxy (which **must** be installed).
+
+    <pre>./bin/mobster.py -t bin/sampleinput/sample.json -p -b --ios</pre>
+
+    Mobster reports will be generated in the MOBSTER_HOME/report folder if no folder is specified. Run mobster.py with the "-h" option to learn more about command-line options. To learn how to make your own flows, look at the scripts in the bin/sampleinput/ directory.
 
 ## Contribution ##
 
