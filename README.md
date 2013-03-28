@@ -92,7 +92,7 @@ Mobster provides a simple way for developers to record crucial web performance d
 **Important Note:**
 If you use Chrome as your web browser normally, it will be annoying to run Mobster with Chrome because Mobster by default uses one of the currently open tab(s) for testing and also clears cookies, etc. This means that, at the end of a test, one of your open tab(s) will be showing the final web page from your test and you will be logged out of all websites. **An easy way to avoid this problem is to run Mobster with [Chromium](http://www.chromium.org/Home) or [Chrome Canary](https://www.google.com/intl/en/chrome/browser/canary.html) so your normal browsing is not affected.** Chrome, Chromium, and Chrome Canary can all be installed side-by-side.
 
-## Run Mobster with an iOS Device ##
+### Run Mobster with an iOS Device ###
 
 
 1. Open Safari on the device. Note that **Mobster will clear cookies** and other browsing data. The tab currently being viewed will be used by Mobster to navigate to webpages. Currently, Safari must be visible on the screen for Mobster to work.
